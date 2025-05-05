@@ -130,13 +130,3 @@ def courier_login(login_attempt_data: OAuth2PasswordRequestForm = Depends(),
 
 
 
-@router.get("/me", response_model=int)
-def read_users_me(
-        current_user: Annotated[schema_user.User, Depends(auth_handler.get_current_user)]):
-    return current_user.user_id
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
-
-@router.get("/test-auth")
-def show_access_token(token: str = Depends(oauth2_scheme)):
-    return {"token": token}
