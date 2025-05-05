@@ -11,9 +11,10 @@ from app.db import get_session
 from app.schemas import schema_user
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
-oauth2_scheme_courier = OAuth2PasswordBearer(tokenUrl="auth/courier/login")
-
+user_oauth2 = OAuth2PasswordBearer(tokenUrl="auth/login",
+        scheme_name = "user_oauth2_schema")
+courier_oauth2 = OAuth2PasswordBearer(tokenUrl="auth/courier/login",
+        scheme_name = "courier_oauth2_schema")
 
 def get_password_hash(password):
     return pwd_context.hash(password)
@@ -41,7 +42,7 @@ def create_access_token(data: dict,
     return encoded_jwt
 
 
-def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],
+def get_current_user(token: Annotated[str, Depends(user_oauth2)],
                      db_session: Session = Depends(get_session)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -65,7 +66,7 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],
     return user
 
 
-def get_current_courier(token: Annotated[str, Depends(oauth2_scheme_courier)],
+def get_current_courier(token: Annotated[str, Depends(courier_oauth2)],
                      db_session: Session = Depends(get_session)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
