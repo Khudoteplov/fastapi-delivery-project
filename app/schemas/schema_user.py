@@ -1,8 +1,5 @@
-from pydantic import (BaseModel, Field, BeforeValidator, EmailStr)
-from pydantic_settings import SettingsConfigDict
-from typing import Optional, Annotated, TypeAlias
-from sqlalchemy import UniqueConstraint
 from sqlmodel import SQLModel, Field as SQLField
+from sqlalchemy import UniqueConstraint
 
 
 class User(SQLModel, table=True):
@@ -46,6 +43,3 @@ class Courier(SQLModel, table=True):
                 "max_number": 10
             }
         }
-
-
-

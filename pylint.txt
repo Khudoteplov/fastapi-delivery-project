@@ -1,0 +1,62 @@
+************* Module app.main
+app/main.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+app/main.py:7:0: C0116: Missing function or method docstring (missing-function-docstring)
+app/main.py:7:19: W0621: Redefining name 'app' from outer scope (line 12) (redefined-outer-name)
+app/main.py:7:19: W0613: Unused argument 'app' (unused-argument)
+app/main.py:3:0: C0411: standard import "contextlib.asynccontextmanager" should be placed before third party import "fastapi.FastAPI" and first party import "app.routes.order"  (wrong-import-order)
+************* Module app.config
+app/config.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+app/config.py:4:0: C0115: Missing class docstring (missing-class-docstring)
+************* Module app.db
+app/db.py:5:0: C0301: Line too long (102/100) (line-too-long)
+app/db.py:6:0: C0301: Line too long (116/100) (line-too-long)
+app/db.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+app/db.py:11:0: C0116: Missing function or method docstring (missing-function-docstring)
+app/db.py:30:0: C0116: Missing function or method docstring (missing-function-docstring)
+************* Module app.schemas.schema_order
+app/schemas/schema_order.py:11:0: C0305: Trailing newlines (trailing-newlines)
+app/schemas/schema_order.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+app/schemas/schema_order.py:6:0: C0115: Missing class docstring (missing-class-docstring)
+app/schemas/schema_order.py:1:0: W0611: Unused Field imported from pydantic (unused-import)
+app/schemas/schema_order.py:2:0: W0611: Unused UniqueConstraint imported from sqlalchemy (unused-import)
+************* Module app.schemas.schema_user
+app/schemas/schema_user.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+app/schemas/schema_user.py:5:0: C0115: Missing class docstring (missing-class-docstring)
+app/schemas/schema_user.py:14:4: C0115: Missing class docstring (missing-class-docstring)
+app/schemas/schema_user.py:14:4: R0903: Too few public methods (0/2) (too-few-public-methods)
+app/schemas/schema_user.py:26:0: C0115: Missing class docstring (missing-class-docstring)
+app/schemas/schema_user.py:37:4: C0115: Missing class docstring (missing-class-docstring)
+app/schemas/schema_user.py:37:4: R0903: Too few public methods (0/2) (too-few-public-methods)
+************* Module app.routes.order
+app/routes/order.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+app/routes/order.py:32:0: C0116: Missing function or method docstring (missing-function-docstring)
+app/routes/order.py:42:0: C0116: Missing function or method docstring (missing-function-docstring)
+app/routes/order.py:6:0: C0411: first party import "app.db.get_session" should be placed before local imports "auth.auth_handler", "schemas.schema_order" (wrong-import-order)
+************* Module app.routes.auth
+app/routes/auth.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+app/routes/auth.py:4:0: E0611: No name 'UniqueViolation' in module 'psycopg2.errors' (no-name-in-module)
+app/routes/auth.py:17:0: C0116: Missing function or method docstring (missing-function-docstring)
+app/routes/auth.py:41:0: C0116: Missing function or method docstring (missing-function-docstring)
+app/routes/auth.py:66:0: C0116: Missing function or method docstring (missing-function-docstring)
+app/routes/auth.py:98:0: C0116: Missing function or method docstring (missing-function-docstring)
+app/routes/auth.py:6:0: C0411: standard import "datetime.timedelta" should be placed before third party imports "fastapi.APIRouter", "sqlmodel.Session", "sqlalchemy.exc.IntegrityError", "psycopg2.errors.UniqueViolation", "fastapi.security.oauth2.OAuth2PasswordRequestForm" (wrong-import-order)
+app/routes/auth.py:10:0: C0411: first party import "app.config.settings" should be placed before local imports "schemas.schema_user", "auth.auth_handler" (wrong-import-order)
+app/routes/auth.py:5:0: C0412: Imports from package fastapi are not grouped (ungrouped-imports)
+************* Module app.routes.courier
+app/routes/courier.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+app/routes/courier.py:8:0: C0116: Missing function or method docstring (missing-function-docstring)
+app/routes/courier.py:15:0: C0116: Missing function or method docstring (missing-function-docstring)
+app/routes/courier.py:26:0: C0116: Missing function or method docstring (missing-function-docstring)
+app/routes/courier.py:43:0: C0116: Missing function or method docstring (missing-function-docstring)
+app/routes/courier.py:58:4: C0200: Consider using enumerate instead of iterating with range and len (consider-using-enumerate)
+************* Module app.auth.auth_handler
+app/auth/auth_handler.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+app/auth/auth_handler.py:19:0: C0116: Missing function or method docstring (missing-function-docstring)
+app/auth/auth_handler.py:23:0: C0116: Missing function or method docstring (missing-function-docstring)
+app/auth/auth_handler.py:27:0: C0116: Missing function or method docstring (missing-function-docstring)
+app/auth/auth_handler.py:45:0: C0116: Missing function or method docstring (missing-function-docstring)
+app/auth/auth_handler.py:69:0: C0116: Missing function or method docstring (missing-function-docstring)
+
+------------------------------------------------------------------
+Your code has been rated at 7.74/10 (previous run: 7.69/10, +0.04)
+

@@ -1,15 +1,13 @@
-from fastapi import APIRouter, status, Depends, HTTPException
+from fastapi import (APIRouter, status, Depends, HTTPException)
 from sqlmodel import Session, select
-from app.db import get_session
-from ..schemas import schema_user
 from sqlalchemy.exc import IntegrityError
 from psycopg2.errors import UniqueViolation
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
-from fastapi.security import OAuth2PasswordBearer
+from datetime import timedelta
+from app.db import get_session
+from ..schemas import schema_user
 from ..auth import auth_handler
 from app.config import settings
-from datetime import timedelta
-from typing import Annotated
 
 router = APIRouter(prefix="/auth", tags=["Безопасность"])
 
@@ -35,7 +33,7 @@ def create_user(user: schema_user.User,
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=f"User with email {user.email} already exists"
-        )
+        ) from e
 
 @router.post("/courier/signup", status_code=status.HTTP_201_CREATED,
              response_model=int,
@@ -58,7 +56,7 @@ def create_courier(courier: schema_user.Courier,
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=f"Courier with email {courier.email} already exists"
-        )
+        ) from e
 
 
 
@@ -89,11 +87,10 @@ def user_login(login_attempt_data: OAuth2PasswordRequestForm = Depends(),
             "access_token": access_token,
             "token_type": "bearer"
         }
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Wrong password for user {login_attempt_data.username}"
-        )
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail=f"Wrong password for user {login_attempt_data.username}"
+    )
 
 
 @router.post("/courier/login", status_code=status.HTTP_200_OK,
@@ -122,11 +119,7 @@ def courier_login(login_attempt_data: OAuth2PasswordRequestForm = Depends(),
             "access_token": access_token,
             "token_type": "bearer"
         }
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Wrong password for courier {login_attempt_data.username}"
-        )
-
-
-
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail=f"Wrong password for courier {login_attempt_data.username}"
+    )

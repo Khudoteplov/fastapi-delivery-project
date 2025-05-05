@@ -1,11 +1,9 @@
-from fastapi import APIRouter, status, Depends, HTTPException
-from sqlalchemy import text
-from sqlmodel import Session, select
-from app.db import get_session
-from ..schemas import (schema_order, schema_user)
-from fastapi.security import OAuth2PasswordBearer
 from typing import Annotated
+from fastapi import (APIRouter, status, Depends, HTTPException)
+from sqlmodel import Session, select
 from ..auth import auth_handler
+from ..schemas import (schema_order, schema_user)
+from app.db import get_session
 
 
 router = APIRouter(prefix="/orders", tags=["Управление заказами в БД"])
@@ -14,7 +12,7 @@ router = APIRouter(prefix="/orders", tags=["Управление заказам�
 @router.post("/", status_code=status.HTTP_201_CREATED,
         summary = "Сделать заказ")
 def create_order(amount: int,
-        current_user: Annotated[schema_user.User, 
+        current_user: Annotated[schema_user.User,
             Depends(auth_handler.get_current_user)],
         session: Session = Depends(get_session)):
     """
@@ -39,7 +37,7 @@ def read_orders(session: Session = Depends(get_session)):
                 detail="List of orders is empty."
                 )
     return orders
- 
+
 @router.delete("/", status_code=status.HTTP_200_OK)
 def remove_order(order_id: int,
         session: Session = Depends(get_session)):

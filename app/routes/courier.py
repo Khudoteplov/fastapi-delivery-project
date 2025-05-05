@@ -1,24 +1,18 @@
-from fastapi import APIRouter, status, Depends, HTTPException
+from typing import Annotated
+from fastapi import (APIRouter, status, Depends, HTTPException)
 from sqlmodel import Session, select
 from app.db import get_session
 from ..schemas import (schema_user, schema_order)
-from sqlalchemy.exc import IntegrityError
-from psycopg2.errors import UniqueViolation
-from fastapi.security.oauth2 import OAuth2PasswordRequestForm
-from fastapi.security import OAuth2PasswordBearer
 from ..auth import auth_handler
-from app.config import settings
-from datetime import timedelta
-from typing import Annotated
 
 def distance(x1, y1, x2, y2):
     return ((x1-x2)**2+(y1-y2)**2)**0.5
 
-router = APIRouter(prefix="/courier-status", 
+router = APIRouter(prefix="/courier-status",
         tags=["Навигация и обновления состояния курьера"])
 
 @router.patch("/location", status_code=status.HTTP_200_OK)
-def update_location(x:float, y:float, 
+def update_location(x:float, y:float,
         current_courier: Annotated[schema_user.Courier,
             Depends(auth_handler.get_current_courier)],
         session: Session = Depends(get_session)):
@@ -38,11 +32,10 @@ def update_number(number: int,
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="Number out of range"
                 )
-    else:
-        current_courier.current_number = number
-        session.commit()
-        session.refresh(current_courier)
-        return current_courier
+    current_courier.current_number = number
+    session.commit()
+    session.refresh(current_courier)
+    return current_courier
 
 @router.get("/", status_code=status.HTTP_200_OK,
         response_model = schema_order.Order,
@@ -68,5 +61,3 @@ def get_target(current_courier: Annotated[schema_user.Courier,
             min_d = t
             k = i
     return orders[k]
-        
-

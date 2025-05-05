@@ -1,13 +1,13 @@
+from typing import Annotated
 from datetime import datetime, timedelta, timezone
 import jwt
 from jwt.exceptions import InvalidTokenError
-from app.config import settings
-from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from sqlmodel import Session, select
 from app.db import get_session
+from app.config import settings
 from app.schemas import schema_user
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -54,8 +54,8 @@ def get_current_user(token: Annotated[str, Depends(user_oauth2)],
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
-    except InvalidTokenError:
-        raise credentials_exception
+    except InvalidTokenError as e:
+        raise credentials_exception from e
 
     statement = (select(schema_user.User)
                  .where(schema_user.User.email == username))
@@ -78,8 +78,8 @@ def get_current_courier(token: Annotated[str, Depends(courier_oauth2)],
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
-    except InvalidTokenError:
-        raise credentials_exception
+    except InvalidTokenError as e:
+        raise credentials_exception from e
 
     statement = (select(schema_user.Courier)
                  .where(schema_user.Courier.email == username))
@@ -88,4 +88,3 @@ def get_current_courier(token: Annotated[str, Depends(courier_oauth2)],
     if courier is None:
         raise credentials_exception
     return courier
-
