@@ -5,9 +5,11 @@ from ..schemas import schema_user
 from sqlalchemy.exc import IntegrityError
 from psycopg2.errors import UniqueViolation
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer
 from ..auth import auth_handler
 from app.config import settings
 from datetime import timedelta
+from typing import Annotated
 
 router = APIRouter(prefix="/auth", tags=["Безопасность"])
 
@@ -32,12 +34,37 @@ def create_user(user: schema_user.User,
         assert isinstance(e.orig, UniqueViolation)
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=f"User with email {user.email} already exists"
+            detail=f"User with email {courier.email} already exists"
+        )
+
+@router.post("/courier/signup", status_code=status.HTTP_201_CREATED,
+             response_model=int,
+             summary = 'Добавить курьера')
+def create_courier(courier: schema_user.Courier,
+                session: Session = Depends(get_session)):
+    new_courier = schema_user.Courier(
+        name=courier.name,
+        email=courier.email,
+        password=auth_handler.get_password_hash(courier.password),
+        max_number=courier.max_number
+    )
+    try:
+        session.add(new_courier)
+        session.commit()
+        session.refresh(new_courier)
+        return new_courier.courier_id
+    except IntegrityError as e:
+        assert isinstance(e.orig, UniqueViolation)
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Courier with email {courier.email} already exists"
         )
 
 
+
+
 @router.post("/login", status_code=status.HTTP_200_OK,
-             summary = 'Войти в систему')
+             summary = 'Вход в систему для клиентов')
 def user_login(login_attempt_data: OAuth2PasswordRequestForm = Depends(),
                db_session: Session = Depends(get_session)):
     statement = (select(schema_user.User)
@@ -68,3 +95,48 @@ def user_login(login_attempt_data: OAuth2PasswordRequestForm = Depends(),
             detail=f"Wrong password for user {login_attempt_data.username}"
         )
 
+
+@router.post("/courier/login", status_code=status.HTTP_200_OK,
+             summary = 'Вход в систему для курьеров')
+def courier_login(login_attempt_data: OAuth2PasswordRequestForm = Depends(),
+               db_session: Session = Depends(get_session)):
+    statement = (select(schema_user.Courier)
+                 .where(schema_user.Courier.email == login_attempt_data.username))
+    existing_user = db_session.exec(statement).first()
+
+    if not existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Courier {login_attempt_data.username} not found"
+        )
+
+    if auth_handler.verify_password(
+            login_attempt_data.password,
+            existing_user.password):
+        access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
+        access_token = auth_handler.create_access_token(
+            data={"sub": login_attempt_data.username},
+            expires_delta=access_token_expires
+        )
+        return {
+            "access_token": access_token,
+            "token_type": "bearer"
+        }
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Wrong password for courier {login_attempt_data.username}"
+        )
+
+
+
+@router.get("/me", response_model=int)
+def read_users_me(
+        current_user: Annotated[schema_user.User, Depends(auth_handler.get_current_user)]):
+    return current_user.user_id
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+
+@router.get("/test-auth")
+def show_access_token(token: str = Depends(oauth2_scheme)):
+    return {"token": token}
