@@ -34,7 +34,7 @@ def create_user(user: schema_user.User,
         assert isinstance(e.orig, UniqueViolation)
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=f"User with email {courier.email} already exists"
+            detail=f"User with email {user.email} already exists"
         )
 
 @router.post("/courier/signup", status_code=status.HTTP_201_CREATED,
