@@ -40,4 +40,15 @@ def read_orders(session: Session = Depends(get_session)):
                 )
     return orders
  
-
+@router.delete("/", status_code=status.HTTP_200_OK)
+def remove_order(order_id: int,
+        session: Session = Depends(get_session)):
+    to_del = session.query(schema_order.Order).filter(
+            schema_order.Order.order_id == order_id)
+#    if to_del is None:
+#        raise HTTPException(
+#                status_code=status.HTTP_204_NO_CONTENT,
+#                detail=f"There is no order with ID {order_id}"
+#                )
+    to_del.delete()
+    session.commit()
