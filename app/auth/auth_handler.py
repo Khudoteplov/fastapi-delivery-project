@@ -12,6 +12,7 @@ from app.schemas import schema_user
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+oauth2_scheme_courier = OAuth2PasswordBearer(tokenUrl="auth/courier/login")
 
 
 def get_password_hash(password):
@@ -62,4 +63,28 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],
     if user is None:
         raise credentials_exception
     return user
+
+
+def get_current_courier(token: Annotated[str, Depends(oauth2_scheme_courier)],
+                     db_session: Session = Depends(get_session)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algo])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except InvalidTokenError:
+        raise credentials_exception
+
+    statement = (select(schema_user.Courier)
+                 .where(schema_user.Courier.email == username))
+    courier = db_session.exec(statement).first()
+
+    if courier is None:
+        raise credentials_exception
+    return courier
 

@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routes import (order, auth)
+from app.routes import (order, auth, courier)
 from contextlib import asynccontextmanager  # Uncomment if you need to create tables on app start >>>
 from app.db import init_database
 
@@ -17,3 +17,4 @@ app = FastAPI(
 
 app.include_router(order.router)
 app.include_router(auth.router)
+app.include_router(courier.router)
